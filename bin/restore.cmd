@@ -26,21 +26,20 @@ set H2_CLASSPATH="%XL_RELEASE_SERVER_HOME%\lib\*"
 set RESTORE_SCRIPT="org.h2.tools.RunScript"
 set args=%*
 
+REM Default live db is repository. For Archive db, pass explicit argument -db archive 
+set DB_NAME=repository
+if "%args%" neq "" (
+    if "%args%" neq "%args:-db archive%" set DB_NAME=archive
+)
+
 REM Run restore script
 (
-%JAVACMD% -cp "%H2_CLASSPATH%" %RESTORE_SCRIPT% ^
--url jdbc:h2:file:%XL_RELEASE_SERVER_HOME%\repository\db ^
+%JAVACMD% -cp %H2_CLASSPATH% %RESTORE_SCRIPT% ^
+-url jdbc:h2:file:%XL_RELEASE_SERVER_HOME%\%DB_NAME%\db ^
 -user sa ^
--script %XL_RELEASE_SERVER_HOME%\backup-repository.zip ^
--options compression zip QUIRKS_MODE VARIABLE_BINARY %args%
+-script %XL_RELEASE_SERVER_HOME%\backup-%DB_NAME%.zip ^
+-options compression zip QUIRKS_MODE VARIABLE_BINARY
 
-%JAVACMD% -cp "%H2_CLASSPATH%" %RESTORE_SCRIPT% ^
--url jdbc:h2:file:%XL_RELEASE_SERVER_HOME%\archive\db ^
--user sa ^
--script %XL_RELEASE_SERVER_HOME%\backup-archive.zip ^
--options compression zip QUIRKS_MODE VARIABLE_BINARY %args%
-
-del %XL_RELEASE_SERVER_HOME%\backup-repository.zip
-del %XL_RELEASE_SERVER_HOME%\backup-archive.zip
+del %XL_RELEASE_SERVER_HOME%\backup-%DB_NAME%.zip
 )
 endlocal

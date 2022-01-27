@@ -44,14 +44,18 @@ cd "$XL_RELEASE_SERVER_HOME"
 H2_CLASSPATH="${XL_RELEASE_SERVER_HOME}/lib/*"
 BACKUP_SCRIPT="org.h2.tools.Script"
 
-# Run backup script
-$JAVACMD -classpath "${H2_CLASSPATH}" $BACKUP_SCRIPT \
--url jdbc:h2:file:$XL_RELEASE_SERVER_HOME/repository/db \
--user sa -script backup-repository.zip \
--options compression zip "$@";
+# Default db is repository. For Archive db, pass explicit argument -db archive
+DB_NAME="repository"
+ARGS="$*"
+DB_ARCHIVE="-db archive"
+# DB_ARCHIVE is present when args != (args with substring $DB_ARCHIVE removed)
+# Equivalent to this in bash shell [[ "$*" =~ '-db archive' ]] && DB_NAME="archive"
+if [ "$ARGS" != "${ARGS%"$DB_ARCHIVE"*}" ]; then
+    DB_NAME="archive"
+fi
 
-$JAVACMD -classpath "${H2_CLASSPATH}" $BACKUP_SCRIPT \
--url jdbc:h2:file:$XL_RELEASE_SERVER_HOME/archive/db \
--user sa -script backup-archive.zip \
--options compression zip "$@";
- 
+# Run backup script
+$JAVACMD -classpath "${H2_CLASSPATH}" "$BACKUP_SCRIPT" \
+-url jdbc:h2:file:$XL_RELEASE_SERVER_HOME/$DB_NAME/db \
+-user sa -script backup-$DB_NAME.zip \
+-options compression zip;
