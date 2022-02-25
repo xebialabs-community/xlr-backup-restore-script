@@ -10,7 +10,7 @@ If the archive database is also H2 and needs backup. Run the backup script with 
 
 >Eg. To backup live H2 db, run `h2-backup.sh` and to backup archive H2 db, run `h2-backup.sh -db archive` 
 
-The backup sql scripts will be generated in server home directory after running the backup script/cmd for live and archive databases. They will be packaged as `h2-backup-repository.zip` and `h2-backup-archive.zip` respectively.
+The backup sql scripts will be generated in server home directory after running the backup script/cmd for live and archive databases. They will be packaged as `backup-repository.zip` and `backup-archive.zip` respectively.
 
 Note: The backup script internally runs the SCRIPT command with default user(sa) and no password.
 If password is configured, pass the argument `-password <password>` in the backup script.
